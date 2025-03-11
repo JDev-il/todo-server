@@ -22,4 +22,7 @@ const TodoSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Task", TodoSchema);
+TodoSchema.index({ createdBy: 1 }); // Optimize search for user tasks
+TodoSchema.index({ dueDate: 1 }); // Faster sorting by due date
+
+module.exports = mongoose.model("Todo", TodoSchema);

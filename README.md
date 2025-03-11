@@ -1,104 +1,117 @@
 # Node.js To-Do | Backend
-This Node.js backend provides a real-time To-Do List API using Express.js, MongoDB, and WebSockets.
+
+A real-time To-Do List API built with Node.js, Express.js, MongoDB, and WebSockets.
 It follows MVC architecture and includes Singleton & Factory Design Patterns for scalability.
 
 ## Main Features & Concepts
--- RESTful API for CRUD operations on To-Do tasks.
--- WebSockets for real-time updates across connected clients.
--- MongoDB (Mongoose) as the database.
--- Singleton Pattern for database connection.
--- Factory Pattern for the service layer.
--- Clean MVC structure for maintainability.
 
----
+✅ RESTful API for CRUD operations on To-Do tasks.
+✅ WebSockets for real-time updates across connected clients.
+✅ MongoDB (Mongoose) as the database.
+✅ Singleton Pattern for database connection.
+✅ Factory Pattern for the service layer.
+✅ Clean MVC structure for maintainability.
 
 ## Getting Started
+
 ### Project Initialization
 
 1. Clone the Repository
-  git clone https://github.com/YOUR_USERNAME/todo-app-server.git
-  cd todo-app-server
+   git clone https://github.com/YOUR_USERNAME/todo-app-server.git
+   cd todo-app-server
 
 2. Install Dependencies
-  npm install
+   npm install
 
+3. Install MongoDB & Atlas-CLI
+   Windows (Shell) → Download from MongoDB
+   macOS (Homebrew) → brew install mongosh
+   Linux → Follow the MongoDB installation guide
 
-## Configure Environment Variables
+4. Log in to MongoDB Atlas
+   atlas auth login
+   Get available Atlas clusters: atlas clusters list
+   Retrieve your MongoDB Atlas connection string: atlas clusters connectionstrings describe YOUR_CLUSTER_NAME
+   Example connection string: MONGO_URI=mongodb+srv://yourUser:yourPassword@yourCluster.mongodb.net/myDatabase?retryWrites=true&w=majority
+
+### Configure Environment Variables
+
 Create a .env file in the project root and add:
-  MONGO_URI=mongodb://localhost:27017/todoDB
-  PORT=5001
+For Local MongoDB:
+MONGO_URI=mongodb://localhost:27017/todoDB
+PORT=5001
 
+For MongoDB Atlas (Cloud Database):
+MONGO_URI=mongodb+srv://yourUser:yourPassword@yourCluster.mongodb.net/myDatabase?retryWrites=true&w=majority
+PORT=5001
 
 ### Project Structure
-/todo-server
-│── /src
-│   ├── /config          # Database connection (Singleton)
-│   │   ├── database.js
-│   ├── /controllers     # Handles request logic
-│   │   ├── todo.controller.js
-│   ├── /models          # Database schema
-│   │   ├── todo.model.js
-│   ├── /routes          # API routes
-│   │   ├── todo.routes.js
-│   ├── /services        # Business logic (Factory Pattern)
-│   │   ├── todo.service.js
-│   ├── /utils           # WebSockets logic
-│       ├── Logger.js
-│   │   ├── WebSocket.js
-│   ├── app.js           # Express app configuration
-│   ├── server.js        # Starts HTTP & WebSocket server
-│── .env
-│── .gitignore
-│── LICENSE
-│── package.json
-│── README.md
 
-#### app.js → Initializes Express, middleware, and routes.
-#### server.js → Starts the HTTP & WebSocket server.
-#### database.js → Singleton for MongoDB connection.
-#### WebSocket.js → Handles real-time updates.
-#### todo.service.js → Factory Pattern for service layer.
-
-
-## Run the Application
-For Development:
-  npm start
-
-For Production:
-node src/server.js
-
+- /src
+  - /config # Database connection (Singleton)
+    - database.js
+  - /controllers # Handles request logic
+    - todo.controller.js
+  - /models # Database schema
+    - todo.model.js
+  - /routes # API routes
+    - todo.routes.js
+  - /services # Business logic (Factory Pattern)
+    - todo.service.js
+  - /utils # WebSockets logic
+    - Logger.js
+    - WebSocket.js
+  - app.js # Express app configuration
+  - server.js # Starts HTTP & WebSocket server
+- .env
+- .gitignore
+- LICENSE
+- package.json
+- README.md
 
 ## API Endpoints
-To-Do Routes:
-Method:     Endpoint:        Description
-GET	        /api/todos       Get all todos
-POST	      /api/todos       Create a new todo
-PUT	        /api/todos/:id   Update a todo
-DELETE	    /api/todos/:id   Get all todos
 
+| Method |      Endpoint      |       Description |
+| :----- | :----------------: | ----------------: |
+| GET    | **/api/todos**     |     Get all todos |
+| POST   | **/api/todos**     | Create a new todo |
+| PUT    | **/api/todos/:id** |     Update a todo |
+| DELETE | **/api/todos/:id**     |     Delete a todo |
 
-WebSocket Events:
-Event Type:   Description:
-CREATE	      Broadcasts when a new task is added
-UPDATE	      Broadcasts when a task is updated
-DELETE	      Broadcasts when a task is deleted
+## WebSocket Events
 
----
-
-## WebSocket Client Example
-To test real-time updates, connect a WebSocket client:
-
-const socket = new WebSocket('ws://localhost:5000');
-socket.onmessage = (event) => {
-    console.log('Received update:', JSON.parse(event.data));
-};
-
+| Event Type |             Description             |
+| :--------- | :---------------------------------: |
+| CREATE     | Broadcasts when a new task is added |
+| UPDATE     | Broadcasts when a task is updated   |
+| DELETE     | Broadcasts when a task is deleted   |
 
 ## Git & Version Control
-### Initialize Git (If Not Already Done)
+
+Initialize Git (If Not Already Done):
+
 git init
 git add .
 git commit -m "Initial commit - Node.js backend setup"
 git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/todo-app-server.git
+git remote add origin https://github.com/YOUR_USERNAME/todo-server.git
 git push -u origin main
+
+Pull Latest Changes:
+git pull origin main
+
+
+## License
+
+This project is licensed under the MIT License.
+
+## Running the App
+
+Start the Server
+  node src/server.js
+
+For Local MongoDB:
+  mongosh "mongodb://localhost:27017/todoDB"
+
+For MongoDB Atlas (Cloud Database):
+  mongosh "mongodb+srv://yourUser:yourPassword@yourCluster.mongodb.net/todoDB"

@@ -1,4 +1,4 @@
-const TodoService = require("../services/todoService");
+const TodoService = require("../services/todo.service");
 const { broadcast } = require("../utils/WebSocket");
 
 class TodoController {

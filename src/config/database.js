@@ -5,6 +5,7 @@ class Database {
     if (!Database.instance) {
       Database.instance = this;
       this.connectionTryOuts = 3;
+      this._db = mongoose.connection;
       this._connect();
       this.setEventListeners();
     }
@@ -13,37 +14,47 @@ class Database {
 
   async _connect() {
     try {
-      const mongooseConnect = await mongoose.connect(process.env.MONGO_URI);
-      if (mongooseConnect) {
-        console.log("MongoDB Connected Successfully");
-        this.connectionTryOuts = 3;
-      }
+      await mongoose.connect(process.env.MONGO_URI, {
+        maxPoolSize: 10, // Allow up to 10 concurrent connections
+        serverSelectionTimeoutMS: 5000,
+      });
+      this.connectionTryOuts = 3;
     } catch (err) {
-      console.error("MongoDB Connection Error:", err);
+      console.error("MongoDB Connection Error:", err.message);
+      this.retryConnection();
+    }
+  }
+
+  retryConnection() {
+    if (this.connectionTryOuts > 0) {
       this.connectionTryOuts--;
-      if (this.connectionTryOuts > 0) {
-        setTimeout(() => this._connect(), 5000); // Retry after 5 sec
-      } else {
-        console.error(
-          "MongoDB connection failed after multiple attempts. Exiting..."
-        );
-        process.exit(1); // Exit process
-      }
+      console.warn(
+        `Retrying MongoDB connection (${this.connectionTryOuts} attempts left)...`
+      );
+      setTimeout(() => this._connect(), 5000); // Retry after 5 seconds
+    } else {
+      console.error("Could not reconnect to MongoDB. Exiting process.");
+      process.exit(1);
     }
   }
 
   setEventListeners() {
-    mongoose.connection.on("disconnected", () => {
-      console.warn("MongoDB Disconnected! Retrying...");
-      this.handleReconnect();
+    this._db.on("disconnected", () => {
+      console.warn("MongoDB Disconnected. Attempting to reconnect...");
+      this.retryConnection(); // Controlled retry
     });
 
-    mongoose.connection.on("error", (err) => {
-      console.error("MongoDB Error:", err);
+    this._db.on("reconnected", () => {
+      console.log("MongoDB Reconnected");
+      this.connectionTryOuts = 3; // Reset retry count
     });
 
-    mongoose.connection.on("reconnected", () => {
-      console.log("MongoDB Reconnected!");
+    this._db.on("connected", () => {
+      console.log("Successfully Connected");
+    });
+
+    this._db.on("close", () => {
+      console.warn("MongoDB Connection Closed.");
     });
   }
 }
