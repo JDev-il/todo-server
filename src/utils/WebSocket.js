@@ -11,7 +11,7 @@ class WebSocketManager {
 
   setup(server) {
     this.wss = new WebSocket.Server({ server });
-    this.wss.on("connection", (ws) => {
+    return this.wss.on("connection", (ws) => {
       this.clients.add(ws);
       ws.on("close", () => this.clients.delete(ws));
     });
