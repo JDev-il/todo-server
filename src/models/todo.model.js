@@ -5,12 +5,16 @@ const TodoSchema = new mongoose.Schema(
     title: { type: String, required: true, trim: true },
     description: { type: String, trim: true },
     completed: { type: Boolean, default: false },
-    priority: { type: String, enum: ["Low", "Medium", "High"], default: "Low" },
-    dueDate: { type: Date },
+    priority: {
+      type: String,
+      enum: ["Low", "Medium", "High"],
+      default: "Low",
+      required: true,
+    },
+    dueDate: { type: Date, required: true },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
     },
     editedBy: {
       type: mongoose.Schema.Types.ObjectId,
