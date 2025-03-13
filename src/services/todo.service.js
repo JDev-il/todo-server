@@ -1,5 +1,4 @@
 const Todo = require("../models/todo.model");
-const createTodoDTO = require("../models/dto/todo.dto");
 
 class TodoService {
   static async getAllTodos() {
@@ -11,26 +10,12 @@ class TodoService {
   }
 
   static async createTodo(data) {
-    const { error, value } = createTodoDTO.validate(data);
-    if (error) throw new Error(error.details[0].message);
-
-    const newTodo = new Todo({
-      ...value,
-      completed: false,
-      createdBy: data.createdBy,
-    });
-
-    return await newTodo.save();
+    const todo = new Todo(data);
+    return await todo.save();
   }
 
   static async updateTodo(id, data) {
-    const { error, value } = createTodoDTO.validate(data);
-    if (error) throw new Error(error.details[0].message);
-
-    return await Todo.findByIdAndUpdate(id, value, {
-      new: true,
-      runValidators: true,
-    });
+    return await Todo.findByIdAndUpdate(id, data, { new: true });
   }
 
   static async deleteTodo(id) {
