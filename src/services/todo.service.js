@@ -1,5 +1,6 @@
 const Todo = require("../models/todo.model");
 const createTodoDTO = require("../models/dto/todo.dto");
+const Joi = require("joi");
 
 class TodoService {
   static async getAllTodos() {
@@ -31,6 +32,34 @@ class TodoService {
       new: true,
       runValidators: true,
     });
+  }
+
+  static async updateManyTodos(todos) {
+    const schema = Joi.object({
+      todos: Joi.array()
+        .items(
+          Joi.object({
+            _id: Joi.string().required(),
+            completed: Joi.boolean().required(),
+          })
+        )
+        .required(),
+    });
+
+    const { error, value } = schema.validate({ todos });
+    if (error) throw new Error(error.details[0].message);
+    const bulkOps = value.todos.map((todo) => ({
+      updateOne: {
+        filter: { _id: todo._id },
+        update: { $set: { completed: todo.completed } },
+      },
+    }));
+    const result = await Todo.bulkWrite(bulkOps);
+    if (result.modifiedCount > 0) {
+      return await Todo.find();
+    } else {
+      throw new Error("No todos were updated");
+    }
   }
 
   static async deleteTodo(id) {

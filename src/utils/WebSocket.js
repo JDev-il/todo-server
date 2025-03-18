@@ -73,14 +73,6 @@ class WebSocketManager {
   wsConnectionStatus(ws) {
     console.log("New WebSocket connection established.");
     this.clients.add(ws);
-    ws.on("message", (message) => {
-      try {
-        const data = JSON.parse(JSON.stringify(message));
-        console.log("Received WebSocket message:", data);
-      } catch (error) {
-        console.error("Invalid WebSocket message format:", error.message);
-      }
-    });
     ws.on("close", () => {
       if (this.clients.has(ws)) {
         this.clients.delete(ws);

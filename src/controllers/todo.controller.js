@@ -27,8 +27,6 @@ class TodoController {
   }
 
   static async updateTodo(req, res) {
-    console.log(req);
-
     try {
       const updatedTodo = await TodoService.updateTodo(req.params.id, req.body);
       if (!updatedTodo) {
@@ -41,15 +39,26 @@ class TodoController {
     }
   }
 
+  static async updateManyTodos(req, res) {
+    try {
+      const updatedTodos = await TodoService.updateManyTodos(req.body.todos);
+      WebSocketManager.broadcast({ type: "UPDATE", todos: updatedTodos });
+      res
+        .status(200)
+        .json({ message: "Todos updated successfully", todos: updatedTodos });
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
   static async deleteTodo(req, res) {
     try {
       const deletedTodo = await TodoService.deleteTodo(req.params.id);
       if (!deletedTodo) {
-        console.log("error deleting....");
         return res.status(404).json({ message: "Todo not found" });
       }
       WebSocketManager.broadcast({ type: "DELETE", id: req.params.id });
-      res.json({ message: "Todo Successfully Deleted" });
+      res.json(deletedTodo);
     } catch (error) {
       res.status(500).json({ message: error.message });
     }

@@ -7,8 +7,10 @@ const server = http.createServer(app);
 WebSocketManager.setup(server);
 
 const PORT = process.env.PORT || 5001;
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+const HOST = "0.0.0.0";
+
+server.listen(PORT, HOST, () => {
+  console.log(`Server running on ${HOST}:${PORT}`);
 });
 
 server.on("error", (error) => {
